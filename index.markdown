@@ -167,15 +167,15 @@ Namespaces have an implicit `default` task called if you address the namespace a
 
   * To backup just the web server:
 
-        cap backup:web
+        $ cap backup:web
 
   * To backup just the db server:
 
-        cap backup:db
+        $ cap backup:db
 
   * To back up both in series:
   
-        cap backup
+        $ cap backup
 
 It is important to note here that when calling tasks from within tasks, unlike with `rake` where they syntax might be something like `Rake::Tasks['backup:db'].invoke`, with Capistrano you simply name the task as if it were any other ruby method.
 
@@ -258,20 +258,69 @@ Here we could inject a task to happen after a symlink, but before a restart by d
       notifier.email_the_boss
     end
 
-Which could be simplified to:
+Which, unless we need the `# Some more logic here perhaps` part could be simplified to:
 
     after("deploy:symlink", "notifier:email_the_boss")
 
-The first example shows the shorthand anonymous-task syntax.
+The first example shows the [shorthand anonymous-task syntax](http://wiki.capify.org/index.php/After#.26block).
 
 ##### Calling Tasks
 
-In the examples we have covered how to call tasks on the command line, how to call tasks explicitly in other tasks, and how to leverage the power of callbacks to inject logic into the default deploy strategy.
+In the examples we have covered how to call tasks on the command line, how to call tasks explicitly in other tasks, and how to leverage the power of callbacks to inject logic into the default deploy strategy. The same techniques of before() and after() callback usage, and your own tasks and namespaces will become important once you start to get beyond the default deployment steps.
 
-  cap production deploy
-  cap staging deploy
-  cap backup_database_server backup_web_server
-  cap backup:database backup:web
-  
+When calling tasks on the command line, most never have to go further than the standard `cap deploy` call; this as you can see from the example above, actually calls a lot of tasks internally, but there is nothing to stop you calling these individually; most rely on other steps, or having queried your choice of `source control` to get the latest revision, but some can be called directly, consider some of the following:
+
+    $ cap deploy:symlink  # re-run the method to symlink releases/<tag> to current/
+
+The trivial example above directly calls one task from a namespace from the command line, another more useful example of this might be:
+
+    namespace :logs do
+      task :watch do
+        stream("tail -f /u/apps/example.com/log/production.log")
+      end
+    end
+
+Which you could then call with:
+
+    $ cap logs:watch
+
+Nothing restricts you calling namespaced tasks directly except their potential data prerequisites.
+
+Another interesting, and often overlooked way of invoking tasks on the command line comes in the form of:
+
+    $ cap task1 task2 namespace1:task1
+
+Which would call, `task1`, `task2`, `namespace1:task1` in order. You can really make use of this; for example you may want to do something like the following to deploy your app, and immediately follow the logs looking for problems.
+
+    $ cap deploy logs:watch
+
+A more interesting application for this technique comes in the form of the [Multi-Stage Extension](weblog.jamisbuck.org/2007/7/23/capistrano-multistage), which qualifies for its own section of the handbook; we'll discuss a simpler implementation briefly here.
+
+The Multi-Stage Extension is designed for deploying the same application to multiple `stages` (development, preview, staging, production, etc) and is usually invoked as such:
+
+    $ cap production deploy
+    $ cap production logs:watch
+    $ cap staging deploy
+    $ cap staging deploy:rollback logs:watch
+
+The Multi-Stage Extension may be implementing something like the following internally:
+
+    task :production do
+      set :deploy_to, "/u/apps/#{application}_production/"
+      set :deploy_via, :remote_cache
+      after('deploy:symlink', 'cache:clear')
+    end
+    
+    task :staging do
+      set :deploy_to, "/u/apps/#{application}_staging/"
+      set :deploy_via, :copy
+      after('deploy:symlink', 'cruise_control:build')
+    end
+
+When you call `cap production deploy`, two variables are set to production friendly values, and an callback is added to clear the live cache (however that might need to work for your environment), where when you call `cap staging deploy` those same two variables are given different values, and a different callback is registered to tell your imaginary [Cruise Control](http://cruisecontrol.sourceforge.net/) server to rebuild and/or test the latest release.
+
+The example above is trivial, but that should explain in a nut shell how the Multi-Stage Extension functions, and how you can implement your own quite easily; The Multi-Stage Extension is still well worth a look, as it is smart about ensuring you don't just run `cap deploy` and get yourself into trouble deploying an application with half of your configuration missing
+
 ##### Transactions
 
+Transactions are a powerful feature of Capistrano that are sadly under-used, *what would happen if your deploy failed?*
