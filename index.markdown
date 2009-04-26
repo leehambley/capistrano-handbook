@@ -324,3 +324,33 @@ The example above is trivial, but that should explain in a nut shell how the Mul
 ##### Transactions
 
 Transactions are a powerful feature of Capistrano that are sadly under-used, *what would happen if your deploy failed?*
+
+Transactions allow us to define what should happen to roll-back a failed task, take a look at the following example:
+
+    task :deploy do
+      transaction do
+        update_code
+        symlink
+      end
+    end
+
+    task :update_code do
+      on_rollback { run "rm -rf #{release_path}" }
+      source.checkout(release_path)
+    end
+
+    task :symlink do
+      on_rollback do
+        run <<-EOC 
+          rm #{current_path};
+          ln -s #{previous_release} #{current_path}
+        EOC
+      end
+      run "rm #{current_path}; ln -s #{release_path} #{current_path}"
+    end
+
+Before `deploy:symlink` is run, the only thing required to roll-back the changes made by `deploy:update_code` is to remove the latest release.
+
+In the `deploy:update_code` example, only one step is needed to undo the *damage* done by the failed task, for `deploy:symlink` there is a little more to it, and in this example this is implemented using the `do..end` block syntax also using a [heredoc](http://en.wikipedia.org/wiki/Heredoc#Ruby) to pass a multi-line string to the run() command, in this instance, as you can see it removes the `current` symlink and replaces it with one to the `previous_release`.
+
+If your roll-back logic was any more complicated than that, you may consider including a rake task with your application with some kind of rollback task that you can invoke to keep the deployment simple.
