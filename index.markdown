@@ -305,14 +305,16 @@ The Multi-Stage Extension is designed for deploying the same application to mult
 
 The Multi-Stage Extension may be implementing something like the following internally:
 
+    set :application, 'example-website'
+
     task :production do
-      set :deploy_to, "/u/apps/#{application}_production/"
+      set :deploy_to, "/u/apps/#{application}-production/"
       set :deploy_via, :remote_cache
       after('deploy:symlink', 'cache:clear')
     end
     
     task :staging do
-      set :deploy_to, "/u/apps/#{application}_staging/"
+      set :deploy_to, "/u/apps/#{application}-staging/"
       set :deploy_via, :copy
       after('deploy:symlink', 'cruise_control:build')
     end
@@ -354,3 +356,68 @@ Before `deploy:symlink` is run, the only thing required to roll-back the changes
 In the `deploy:update_code` example, only one step is needed to undo the *damage* done by the failed task, for `deploy:symlink` there is a little more to it, and in this example this is implemented using the `do..end` block syntax also using a [heredoc](http://en.wikipedia.org/wiki/Heredoc#Ruby) to pass a multi-line string to the run() command, in this instance, as you can see it removes the `current` symlink and replaces it with one to the `previous_release`.
 
 If your roll-back logic was any more complicated than that, you may consider including a rake task with your application with some kind of rollback task that you can invoke to keep the deployment simple.
+
+#### Variables
+
+Capistrano has its own variable mechanism built in, you will not in the default `deploy.rb` that `capify` generates most of the variable assignment is done in the following manner:
+
+    set :foo, 'bar'
+
+As [`set`](http://wiki.capify.org/index.php/Set) is quite a complex function, we will only brush the surface here.
+
+Here are a few things to note:
+
+    set :username, 'Capistrano Wizard'
+    
+    task :say_username do
+      puts "Hello #{username}"
+    end
+
+Note that we have a *real* ruby variable to use in our string interpolation, having used the Capistrano specific `set` method to declare, and assign to it.
+
+One of the key benefits to using the `set` method is that it makes the resulting variable available anywhere inside the Capistrano environment, as well as being able to assign complex objects such as Procs to variables for delayed processing.
+
+Set has a partner function [`fetch`](http://wiki.capify.org/index.php/Set) that functions similarly except that it is for retrieving previously `set` variables.
+
+In addition, there is [`exists?`](http://wiki.capify.org/index.php/Exists%3F) which can be used to check whether a variable exists at all; this might be used to implement a solution to the *missing stage* problem we left unresolved in the **Tasks** section:
+
+    before :deploy do
+      unless exists?(:deploy_to)
+        raise "Please invoke me like `cap stage deploy` where stage is production/staging"
+      end
+    end
+
+For convenience Capistrano's internals use a method called `_cset` which is designed to non-destructively set variables, it is implemented using `exists?` and `set`, take a look:
+
+    def _cset(name, *args, &block)
+      unless exists?(name)
+        set(name, *args, &block)
+      end
+    end
+
+This can be used without you having to redefine it to set a variable, only in the event that it hasn't already been set. If you need to change the value of a variable, please just use `set`.
+
+Part of the argument list to `set` is a `&block`, these can be used to lazy-set a variable, or compute it at runtime... take a look:
+
+    set :application, 'example-website'
+    set :deploy_to, { "/u/apps/#{application}-#{stage}" }
+    
+    task :production do
+      set :stage, 'production'
+    end
+    
+    task :staging do
+      set :stage, 'staging'
+    end
+
+Note that on the second line of the example the `stage` variable doesn't exist, and were Capistrano to evaluate this inline, an exception would be raised.
+
+However, as the `deploy_to` variable isn't used until further through the deployment process, in `deploy:update`, which we know when invoked with `cap production deploy` will run after the `production` task has defined the `stage` variable, the block that is assigned to `:deploy_to` won't be evaluated until then; this is often used by people who wish to have Capistrano ask for their passwords at deploy-time, rather than commit them to the source repository, for example:
+
+    set(:user) do
+       Capistrano::CLI.ui.ask "Give me a ssh user: "
+    end
+
+This prompt won't be displayed until the variable is actually required, which of course depending on the configuration of your callbacks, may be never at all, this is a very valuable feature that can help ensure your low-level staff or colleagues don't have access to sensitive passwords for production environments that you may wish to keep a secret.
+
+**Note:** The curly-brace, and do..end syntaxes are purely a matter of taste and readability, choose whichever suits you better, this is Ruby syntax sugar, and you may use it as you please.
