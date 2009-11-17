@@ -1,0 +1,2 @@
+Capistrano Without Rails
+========================
