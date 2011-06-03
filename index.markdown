@@ -230,7 +230,7 @@ As this is considered to be a feature, not a limitation of Capistrano; there is 
     
     after (:deploy, "notifier:email_the_boss")
 
-Note the different arguments, essentially it doesn't matter how you send these, strings, symbols or otherwise, they are automagically red through to ascertain what you intended, I could just have easily have written:
+Note the different arguments, essentially it doesn't matter how you send these, strings, symbols or otherwise, they are automagically read through to ascertain what you intended, I could just have easily have written:
 
     after ('deploy', "notifier:email_the_boss")
 
