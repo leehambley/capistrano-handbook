@@ -230,7 +230,7 @@ As this is considered to be a feature, not a limitation of Capistrano; there is 
     
     after (:deploy, "notifier:email_the_boss")
 
-Note the different arguments, essentially it doesn't matter how you send these, strings, symbols or otherwise, they are automagically red through to ascertain what you intended, I could just have easily have written:
+Note the different arguments, essentially it doesn't matter how you send these, strings, symbols or otherwise, they are automagically read through to ascertain what you intended, I could just have easily have written:
 
     after ('deploy', "notifier:email_the_boss")
 
@@ -421,3 +421,4 @@ However, as the `deploy_to` variable isn't used until further through the deploy
 This prompt won't be displayed until the variable is actually required, which of course depending on the configuration of your callbacks, may be never at all, this is a very valuable feature that can help ensure your low-level staff or colleagues don't have access to sensitive passwords for production environments that you may wish to keep a secret.
 
 **Note:** The curly-brace, and do..end syntaxes are purely a matter of taste and readability, choose whichever suits you better, this is Ruby syntax sugar, and you may use it as you please.
+
