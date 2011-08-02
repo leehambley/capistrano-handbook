@@ -120,17 +120,17 @@ It stands to reason that with such a wide scope of available uses, there would b
 
 Defining a task in this way, and more about how the task blocks are arranged is forthcoming; however imagine we had two tasks `backup` perhaps, that needed to work differently on different roles.. here's how namepsaces solve that problem
 
-  namespace :web_server do
-    task :backup do
-      puts "In Example Backup Web-Server"
+    namespace :web_server do
+      task :backup do
+        puts "In Example Backup Web-Server"
+      end
     end
-  end
   
-  namespace :database_server do
-    task :backup do
-      puts "In Example Backup Database-Server"
+    namespace :database_server do
+      task :backup do
+        puts "In Example Backup Database-Server"
+      end
     end
-  end
 
 Whilst the tasks in the first example might be listed by `cap -T` as:
 
