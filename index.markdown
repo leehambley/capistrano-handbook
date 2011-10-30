@@ -150,7 +150,7 @@ Namespaces have an implicit `default` task called if you address the namespace a
       
       task :default do
         web
-        database
+        db
       end
       
       task :web, :roles => :web do
