@@ -298,28 +298,26 @@ A more interesting application for this technique comes in the form of the [Mult
 
 The Multi-Stage Extension is designed for deploying the same application to multiple `stages` (development, preview, staging, production, etc) and is usually invoked as such:
 
-    $ cap production deploy
-    $ cap production logs:watch
     $ cap staging deploy
     $ cap staging deploy:rollback logs:watch
+    $ cap production deploy
+    $ cap production logs:watch
 
 The Multi-Stage Extension may be implementing something like the following internally:
 
     set :application, 'example-website'
 
-    task :production do
-      set :deploy_to, "/u/apps/#{application}-production/"
-      set :deploy_via, :remote_cache
-      after('deploy:symlink', 'cache:clear')
-    end
-    
     task :staging do
       set :deploy_to, "/u/apps/#{application}-staging/"
       set :deploy_via, :copy
       after('deploy:symlink', 'cruise_control:build')
     end
 
-When you call `cap production deploy`, two variables are set to production friendly values, and a callback is added to clear the live cache (however that might need to work for your environment), where when you call `cap staging deploy` those same two variables are given different values, and a different callback is registered to tell your imaginary [Cruise Control](http://cruisecontrol.sourceforge.net/) server to rebuild and/or test the latest release.
+    task :production do
+      set :deploy_to, "/u/apps/#{application}-production/"
+      set :deploy_via, :remote_cache
+      after('deploy:symlink', 'cache:clear')
+    end
 
 The example above is trivial, but that should explain in a nut shell how the Multi-Stage Extension functions, and how you can implement your own quite easily; The Multi-Stage Extension is still well worth a look, as it is smart about ensuring you don't just run `cap deploy` and get yourself into trouble deploying an application with half of your configuration missing
 
