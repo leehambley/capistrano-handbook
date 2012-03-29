@@ -177,7 +177,7 @@ Namespaces have an implicit `default` task called if you address the namespace a
   
         $ cap backup
 
-It is important to note here that when calling tasks from within tasks, unlike with `rake` where they syntax might be something like `Rake::Tasks['backup:db'].invoke`, with Capistrano you simply name the task as if it were any other ruby method.
+It is important to note here that when calling tasks from within tasks, unlike with `rake` where their syntax might be something like `Rake::Tasks['backup:db'].invoke`, with Capistrano you simply name the task as if it were any other ruby method.
 
 When calling tasks cross-namespace, or for readability you can (and often should) prefix the task call with the namespace in which the task resides, for example:
 
@@ -230,7 +230,7 @@ As this is considered to be a feature, not a limitation of Capistrano; there is 
     
     after (:deploy, "notifier:email_the_boss")
 
-Note the different arguments, essentially it doesn't matter how you send these, strings, symbols or otherwise, they are automagically read through to ascertain what you intended, I could just have easily have written:
+Note the different arguments, essentially it doesn't matter how you send these, strings, symbols or otherwise, they are automagically read through to ascertain what you intended, I could just as easily have written:
 
     after ('deploy', "notifier:email_the_boss")
 
@@ -319,7 +319,7 @@ The Multi-Stage Extension may be implementing something like the following inter
       after('deploy:symlink', 'cruise_control:build')
     end
 
-When you call `cap production deploy`, two variables are set to production friendly values, and an callback is added to clear the live cache (however that might need to work for your environment), where when you call `cap staging deploy` those same two variables are given different values, and a different callback is registered to tell your imaginary [Cruise Control](http://cruisecontrol.sourceforge.net/) server to rebuild and/or test the latest release.
+When you call `cap production deploy`, two variables are set to production friendly values, and a callback is added to clear the live cache (however that might need to work for your environment), where when you call `cap staging deploy` those same two variables are given different values, and a different callback is registered to tell your imaginary [Cruise Control](http://cruisecontrol.sourceforge.net/) server to rebuild and/or test the latest release.
 
 The example above is trivial, but that should explain in a nut shell how the Multi-Stage Extension functions, and how you can implement your own quite easily; The Multi-Stage Extension is still well worth a look, as it is smart about ensuring you don't just run `cap deploy` and get yourself into trouble deploying an application with half of your configuration missing
 
@@ -359,7 +359,7 @@ If your roll-back logic was any more complicated than that, you may consider inc
 
 #### Variables
 
-Capistrano has its own variable mechanism built in, you will not in the default `deploy.rb` that `capify` generates most of the variable assignment is done in the following manner:
+Capistrano has its own variable mechanism built in, you will note in the default `deploy.rb` that `capify` generates most of the variable assignment is done in the following manner:
 
     set :foo, 'bar'
 
@@ -418,7 +418,7 @@ However, as the `deploy_to` variable isn't used until further through the deploy
        Capistrano::CLI.ui.ask "Give me a ssh user: "
     end
 
-This prompt won't be displayed until the variable is actually required, which of course depending on the configuration of your callbacks, may be never at all, this is a very valuable feature that can help ensure your low-level staff or colleagues don't have access to sensitive passwords for production environments that you may wish to keep a secret.
+This prompt won't be displayed until the variable is actually required, which of course depending on the configuration of your callbacks, may be never. This is a very valuable feature that can help ensure your low-level staff or colleagues don't have access to sensitive passwords for production environments that you may wish to keep a secret.
 
 **Note:** The curly-brace, and do..end syntaxes are purely a matter of taste and readability, choose whichever suits you better, this is Ruby syntax sugar, and you may use it as you please.
 
