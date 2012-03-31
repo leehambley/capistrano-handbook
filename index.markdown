@@ -359,7 +359,7 @@ If your roll-back logic was any more complicated than that, you may consider inc
 
 #### Variables
 
-Capistrano has its own variable mechanism built in, you will not in the default `deploy.rb` that `capify` generates most of the variable assignment is done in the following manner:
+Capistrano has its own variable mechanism built in, you will note in the default `deploy.rb` that `capify` generates most of the variable assignment is done in the following manner:
 
     set :foo, 'bar'
 
