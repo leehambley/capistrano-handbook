@@ -319,6 +319,8 @@ The Multi-Stage Extension may be implementing something like the following inter
       after('deploy:symlink', 'cache:clear')
     end
 
+When you call `cap production deploy`, two variables are set to production friendly values, and a callback is added to clear the live cache (however that might need to work for your environment), where when you call `cap staging deploy` those same two variables are given different values, and a different callback is registered to tell your imaginary [Cruise Control](http://cruisecontrol.sourceforge.net/) server to rebuild and/or test the latest release.
+
 The example above is trivial, but that should explain in a nut shell how the Multi-Stage Extension functions, and how you can implement your own quite easily; The Multi-Stage Extension is still well worth a look, as it is smart about ensuring you don't just run `cap deploy` and get yourself into trouble deploying an application with half of your configuration missing
 
 ##### Transactions
