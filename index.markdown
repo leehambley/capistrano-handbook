@@ -177,7 +177,7 @@ Namespaces have an implicit `default` task called if you address the namespace a
   
         $ cap backup
 
-It is important to note here that when calling tasks from within tasks, unlike with `rake` where they syntax might be something like `Rake::Tasks['backup:db'].invoke`, with Capistrano you simply name the task as if it were any other ruby method.
+It is important to note here that when calling tasks from within tasks, unlike with `rake` where the syntax might be something like `Rake::Tasks['backup:db'].invoke`, with Capistrano you simply name the task as if it were any other ruby method.
 
 When calling tasks cross-namespace, or for readability you can (and often should) prefix the task call with the namespace in which the task resides, for example:
 
