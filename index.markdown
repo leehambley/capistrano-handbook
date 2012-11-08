@@ -46,30 +46,28 @@ Typically `capifying` an application will create something akin to the following
     role :web, "your web-server here"
     role :db,  "your db-server here", :primary => true
 
-If your application is not separated into `application`, `web` and `database` servers, you can either set them to be the same value; or comment out, or remove the one you do not require.
+If your application is not separated into `application`, `web` and `database` servers, you can set them to be the same value (or comment out / remove the ones you don't need).
 
-Typically for a `PHP` application one would expect to comment out the `web` or `app` roles, depending on your requirements. Certain built in tasks expect to run only on one, or the other kind of server.
+Often for a `PHP` application one of the `web` or `app` roles may be commented out, depending on your requirements. Certain built-in tasks expect to run only on one or the other kind of server.
 
-The `:primary => true` part of the role definitions allows you to have more than one database server, this could easily also be written either of the following two ways:
+The `:primary => true` part of the role definitions allows you to have more than one database server.  This could also be written either of the following two ways:
+If you have two servers, and neither is `primary`:
 
     role :db, 'db1.example.com', 'db2.example.com'
     -- or --
     role :db, 'db1.example.com', 'db2.example.com', :primary => true
 
-If you have two servers, and neither is `primary`, or 
-
+If when deploying a Rails application you only want `db1` to run migrations (
     role :db, 'db1.example.com', :primary => true
     role :db, 'db2.example.com'
 
-If, for example when deploying a Rails application you only wanted `db1` to run migrations, in the first example both might.
+In the first example migrations may run on both servers.  Essentially when using the Rails deployment recipes, the `:primary` option defines where database migrations are run.
 
-Essentially when using the Rails deployment recipes, the `:primary` option defines where database migrations are run.
+Similar attributes include `:no_release` - often used for the `:web` role by some of the recipes in circulation to decide which servers should not have the code checked out to them.
 
-Similar attributes include `:no_release` often used for the `:web` role by some of the recipes in circulation to decide which servers should not have the code checked out to them.
+Attributes like these are arbitrary and you can define some of your own, and use them to filter more precisely where your own tasks run.
 
-Attributes like these are arbitrary and you can define some of your own, and use them to filter more precisely where your own tasks run,
-
-You may want to read more about the [`role`](http://wiki.capify.org/index.php/Role) method as it has a few options. There is the alternate [`server`] method which works slightly differently, the examples should demonstrate how-so.
+You may want to read more about the [`role`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Roles-Role) method as it has a few options. There is the alternate [`server`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Roles-Server) method which works slightly differently, the examples should demonstrate this:
 
     role :db, 'www.example.com'
     role :app, 'www.example.com'
@@ -98,15 +96,15 @@ Tasks are defined as such, and can be defined anywhere inside your `Capfile` or 
 
 Lets break that down a little...
 
-The [`desc`](http://wiki.capify.org/index.php/Desc) method defines the task description, this shows up when using `cap -T` on your application.. these are arbitrary description strings that can be used to help your users or fellow developers.
+The [`desc`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Tasks-Desc) method defines the task description. This shows up when using `cap -T` on your application. These are arbitrary description strings that can be used to help your users or fellow developers.
 
 Tasks without a `desc`ription will not be listed by a default `cap -T`, but will however be listed with a `cap -Tv`. More command line options for the `cap` script will be discussed later in the handbook.
 
-The [`task`](http://wiki.capify.org/index.php/Task) method expects a block, that is run when the task is invoked. The task can, typically contain any number of instructions, both to run locally and on your deployment target servers (`app`,`web`,`db`).
+The [`task`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Tasks-Task) method expects a block that is run when the task is invoked. The task can contain any number of instructions, both to run locally and on your deployment target servers (`app`,`web`,`db`).
 
 ##### Namespacing Tasks 
 
-It stands to reason that with such a wide scope of available uses, there would be potential for naming clashes, this isn't a problem localized to Capistrano; and elsewhere in the computer sciences world this has been solved with Namespacing; Capistrano is no different, take the following example:
+It stands to reason that with such a wide scope of available uses, there would be potential for naming clashes. This isn't a problem localized to Capistrano and elsewhere in the computer sciences world this has been solved with namespacing. Capistrano is no different, take the following example:
 
     desc "Backup Web Server"
     task :backup_web_server do
@@ -118,7 +116,7 @@ It stands to reason that with such a wide scope of available uses, there would b
       puts "In Example Backup Database-Server"
     end
 
-Defining a task in this way, and more about how the task blocks are arranged is forthcoming; however imagine we had two tasks `backup` perhaps, that needed to work differently on different roles.. here's how namepsaces solve that problem
+Defining a task this way and more about how the task blocks are arranged is forthcoming.  However, imagine we have two `backup` tasks that need to work differently on different roles.  Here's how namepsaces solve that problem:
 
     namespace :web_server do
       task :backup do
@@ -144,7 +142,7 @@ And invoked with either `cap backup_database_server` or `cap backup_web_server`;
 
 and similarly invoked with `cap database_server:backup` or `cap web_server:backup`
 
-Namespaces have an implicit `default` task called if you address the namespace as if it were a task, consider the following example:
+Namespaces have an implicit `default` task called if you address the namespace as if it were a task.  Consider the following example:
 
     namespace :backup do
       
@@ -163,7 +161,7 @@ Namespaces have an implicit `default` task called if you address the namespace a
       
     end
 
-**Note:** These are nested differently to the two previous examples, as when looked at in these terms it makes a lot more sense to namespace them this way, and simply call the following
+**Note:** These are nested differently to the two previous examples. When looked at in these terms it makes a lot more sense to namespace them this way, and simply call the following:
 
   * To backup just the web server:
 
@@ -206,7 +204,7 @@ Calling `cap one` would output:
 
 This gets slightly more complicated as the namespace hierarchy becomes more intricate but the same principles always apply.
 
-Namespaces are nestable, an example from one of the core methods is `cap deploy:web:disable` a `disable` task in the `web` namespace which in turn resides in the `deploy` namespace.
+Namespaces are nestable, an example from one of the core methods is `cap deploy:web:disable` - a `disable` task in the `web` namespace which in turn resides in the `deploy` namespace.
 
 There is a `top` namespace for convenience, and it is here that methods defined outside of an explicit `namespace` block reside by default. If you are in a task inside a namespace, and you want to call a task from a _higher_ namespace, or outside of them all, prefix it with `top` and you can define the path to the task you require.
 
@@ -216,7 +214,7 @@ Unlike [`rake`](http://rake.rubyforge.org/) when you define a task that collides
 
 ##### Chaining Tasks
 
-As this is considered to be a feature, not a limitation of Capistrano; there is an exceptionally easy way to chain tasks, including but not limited to the `default` task for each namespace, consider the following
+As this is considered to be a feature, not a limitation of Capistrano; there is an exceptionally easy way to chain tasks, including but not limited to the `default` task for each namespace.  Consider the following:
 
     namespace :deploy do
       # .. this is a default namespace with lots of its own tasks
@@ -230,13 +228,13 @@ As this is considered to be a feature, not a limitation of Capistrano; there is 
     
     after (:deploy, "notifier:email_the_boss")
 
-Note the different arguments, essentially it doesn't matter how you send these, strings, symbols or otherwise, they are automagically read through to ascertain what you intended, I could just have easily have written:
+Note the different arguments, essentially it doesn't matter how you send these.  Strings, symbols or otherwise, they are automagically read through to ascertain what you intended.  I could just as easily have written:
 
     after ('deploy', "notifier:email_the_boss")
 
-The convention here would appear to be, when using a single word namespace, or task name; **pass it as a symbol** otherwise it must be a string, using the colon-separated task notation.
+The convention here would appear to be, when using a single word namespace or task name, **pass it as a symbol**.  Otherwise it must be a string, using the colon-separated task notation.
 
-There are both [before](), and [after]() callbacks that you can use, and there is nothing to stop you interfering with the execution of any method that calls another, take for example that at the time of writing the implementation of `deploy:default` might look something like this:
+There are both [before](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Tasks-Before), and [after](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Tasks-After) callbacks that you can use, and there is nothing to stop you interfering with the execution of any method that calls another.  Take for example that, at the time of writing, the implementation of `deploy:default` might look something like this:
 
     namespace :deploy do
       task :default do
@@ -249,7 +247,7 @@ There are both [before](), and [after]() callbacks that you can use, and there i
       end
     end
 
-**More Info:** [Default Execution Path on the Wiki](http://wiki.capify.org/index.php/Default_Execution_Path)
+**More Info:** [Default Deployment Behaviour](https://github.com/capistrano/capistrano/wiki/2.x-Default-Deployment-Behaviour)
 
 Here we could inject a task to happen after a symlink, but before a restart by doing something like:
 
@@ -262,13 +260,13 @@ Which, unless we need the `# Some more logic here perhaps` part could be simplif
 
     after("deploy:symlink", "notifier:email_the_boss")
 
-The first example shows the [shorthand anonymous-task syntax](http://wiki.capify.org/index.php/After#.26block).
+The first example shows the [shorthand anonymous task syntax](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Tasks-After).
 
 ##### Calling Tasks
 
 In the examples we have covered how to call tasks on the command line, how to call tasks explicitly in other tasks, and how to leverage the power of callbacks to inject logic into the default deploy strategy. The same techniques of before() and after() callback usage, and your own tasks and namespaces will become important once you start to get beyond the default deployment steps.
 
-When calling tasks on the command line, most never have to go further than the standard `cap deploy` call; this as you can see from the example above, actually calls a lot of tasks internally, but there is nothing to stop you calling these individually; most rely on other steps, or having queried your choice of `source control` to get the latest revision, but some can be called directly, consider some of the following:
+When calling tasks on the command line, most never have to go further than the standard `cap deploy` call.  This, as you can see from the example above, actually calls a lot of tasks internally, but there is nothing to stop you calling these individually.  Most rely on other steps, or having queried your choice of `source control` to get the latest revision, but some can be called directly.  Consider some of the following:
 
     $ cap deploy:symlink  # re-run the method to symlink releases/<tag> to current/
 
@@ -286,11 +284,11 @@ Which you could then call with:
 
 Nothing restricts you calling namespaced tasks directly except their potential data prerequisites.
 
-Another interesting, and often overlooked way of invoking tasks on the command line comes in the form of:
+Another interesting and often overlooked way of invoking tasks on the command line comes in the form of:
 
     $ cap task1 task2 namespace1:task1
 
-Which would call, `task1`, `task2`, `namespace1:task1` in order. You can really make use of this; for example you may want to do something like the following to deploy your app, and immediately follow the logs looking for problems.
+Which would call, `task1`, `task2`, `namespace1:task1` in order. You can really make use of this; for example you may want to do something like the following to deploy your app, and immediately follow the logs looking for problems:
 
     $ cap deploy logs:watch
 
@@ -319,15 +317,15 @@ The Multi-Stage Extension may be implementing something like the following inter
       after('deploy:symlink', 'cruise_control:build')
     end
 
-When you call `cap production deploy`, two variables are set to production friendly values, and an callback is added to clear the live cache (however that might need to work for your environment), where when you call `cap staging deploy` those same two variables are given different values, and a different callback is registered to tell your imaginary [Cruise Control](http://cruisecontrol.sourceforge.net/) server to rebuild and/or test the latest release.
+When you call `cap production deploy`, two variables are set to production friendly values, and a callback is added to clear the live cache (however that might need to be done in your environment).   When you call `cap staging deploy`, those same two variables are given different values, and a different callback is registered to tell your imaginary [Cruise Control](http://cruisecontrol.sourceforge.net/) server to rebuild and/or test the latest release.
 
-The example above is trivial, but that should explain in a nut shell how the Multi-Stage Extension functions, and how you can implement your own quite easily; The Multi-Stage Extension is still well worth a look, as it is smart about ensuring you don't just run `cap deploy` and get yourself into trouble deploying an application with half of your configuration missing
+The example above is trivial, but that should explain in a nutshell how the Multi-Stage Extension works, and how you can implement your own quite easily. The Multi-Stage Extension is still well worth a look, as it is smart about ensuring you don't just run `cap deploy` and get yourself into trouble deploying an application with half of your configuration missing.
 
 ##### Transactions
 
 Transactions are a powerful feature of Capistrano that are sadly under-used, *what would happen if your deploy failed?*
 
-Transactions allow us to define what should happen to roll-back a failed task, take a look at the following example:
+Transactions allow us to define what should happen to roll-back a failed task. Take a look at the following example:
 
     task :deploy do
       transaction do
@@ -353,17 +351,17 @@ Transactions allow us to define what should happen to roll-back a failed task, t
 
 Before `deploy:symlink` is run, the only thing required to roll-back the changes made by `deploy:update_code` is to remove the latest release.
 
-In the `deploy:update_code` example, only one step is needed to undo the *damage* done by the failed task, for `deploy:symlink` there is a little more to it, and in this example this is implemented using the `do..end` block syntax also using a [heredoc](http://en.wikipedia.org/wiki/Heredoc#Ruby) to pass a multi-line string to the run() command, in this instance, as you can see it removes the `current` symlink and replaces it with one to the `previous_release`.
+In the `deploy:update_code` example, only one step is needed to undo the *damage* done by the failed task.  For `deploy:symlink` there is a little more to it, and in this example this is implemented using the `do..end` block syntax also using a [heredoc](http://en.wikipedia.org/wiki/Heredoc#Ruby) to pass a multi-line string to the run() command.  As you can see it removes the `current` symlink and replaces it with one to the `previous_release`.
 
 If your roll-back logic was any more complicated than that, you may consider including a rake task with your application with some kind of rollback task that you can invoke to keep the deployment simple.
 
 #### Variables
 
-Capistrano has its own variable mechanism built in, you will not in the default `deploy.rb` that `capify` generates most of the variable assignment is done in the following manner:
+Capistrano has its own variable mechanism built in.  You will note that in the default `deploy.rb` that `capify` generates, most of the variable assignment is done in the following manner:
 
     set :foo, 'bar'
 
-As [`set`](http://wiki.capify.org/index.php/Set) is quite a complex function, we will only brush the surface here.
+As [`set`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Variables-Set) is quite a complex function, we will only brush the surface here.
 
 Here are a few things to note:
 
@@ -377,9 +375,9 @@ Note that we have a *real* ruby variable to use in our string interpolation, hav
 
 One of the key benefits to using the `set` method is that it makes the resulting variable available anywhere inside the Capistrano environment, as well as being able to assign complex objects such as Procs to variables for delayed processing.
 
-Set has a partner function [`fetch`](http://wiki.capify.org/index.php/Set) that functions similarly except that it is for retrieving previously `set` variables.
+Set has a partner function [`fetch`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Variables-Fetch) that functions similarly except that it is for retrieving previously `set` variables.
 
-In addition, there is [`exists?`](http://wiki.capify.org/index.php/Exists%3F) which can be used to check whether a variable exists at all; this might be used to implement a solution to the *missing stage* problem we left unresolved in the **Tasks** section:
+In addition, there is [`exists?`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Variables-Exists) which can be used to check whether a variable exists at all; this might be used to implement a solution to the *missing stage* problem we left unresolved in the **Tasks** section:
 
     before :deploy do
       unless exists?(:deploy_to)
@@ -395,9 +393,9 @@ For convenience Capistrano's internals use a method called `_cset` which is desi
       end
     end
 
-This can be used without you having to redefine it to set a variable, only in the event that it hasn't already been set. If you need to change the value of a variable, please just use `set`.
+This can be used without you having to redefine it to conditionally set a variable, if that variable has not already been set. If you need to change the value of a variable, please just use `set`.
 
-Part of the argument list to `set` is a `&block`, these can be used to lazy-set a variable, or compute it at runtime... take a look:
+Part of the argument list to `set` is a `&block`, these can be used to lazy-set a variable, or compute it at runtime:
 
     set :application, 'example-website'
     set :deploy_to, { "/u/apps/#{application}-#{stage}" }
@@ -412,13 +410,13 @@ Part of the argument list to `set` is a `&block`, these can be used to lazy-set 
 
 Note that on the second line of the example the `stage` variable doesn't exist, and were Capistrano to evaluate this inline, an exception would be raised.
 
-However, as the `deploy_to` variable isn't used until further through the deployment process, in `deploy:update`, which we know when invoked with `cap production deploy` will run after the `production` task has defined the `stage` variable, the block that is assigned to `:deploy_to` won't be evaluated until then; this is often used by people who wish to have Capistrano ask for their passwords at deploy-time, rather than commit them to the source repository, for example:
+The `deploy_to` variable isn't used until further through the deployment process, in `deploy:update`.  When invoked with `cap production deploy`, `deploy:update` will run after the `production` task has defined the `stage` variable, and the block that is assigned to `:deploy_to` won't be evaluated until then.  This is often used by people who wish to have Capistrano ask for their passwords at deploy-time, rather than commit them to the source repository, for example:
 
     set(:user) do
        Capistrano::CLI.ui.ask "Give me a ssh user: "
     end
 
-This prompt won't be displayed until the variable is actually required, which of course depending on the configuration of your callbacks, may be never at all, this is a very valuable feature that can help ensure your low-level staff or colleagues don't have access to sensitive passwords for production environments that you may wish to keep a secret.
+This prompt won't be displayed until the variable is actually required.  Depending on the configuration of your callbacks, this may be never at all.  This is a very valuable feature that can help ensure your low-level staff or colleagues don't have access to sensitive passwords for production environments that you wish to keep secret.
 
 **Note:** The curly-brace, and do..end syntaxes are purely a matter of taste and readability, choose whichever suits you better, this is Ruby syntax sugar, and you may use it as you please.
 
