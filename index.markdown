@@ -69,7 +69,7 @@ Similar attributes include `:no_release` often used for the `:web` role by some 
 
 Attributes like these are arbitrary and you can define some of your own, and use them to filter more precisely where your own tasks run,
 
-You may want to read more about the [`role`](http://wiki.capify.org/index.php/Role) method as it has a few options. There is the alternate [`server`] method which works slightly differently, the examples should demonstrate how-so.
+You may want to read more about the [`role`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Roles-Role) method as it has a few options. There is the alternate [`server`] method which works slightly differently, the examples should demonstrate how-so.
 
     role :db, 'www.example.com'
     role :app, 'www.example.com'
@@ -98,11 +98,11 @@ Tasks are defined as such, and can be defined anywhere inside your `Capfile` or 
 
 Lets break that down a little...
 
-The [`desc`](http://wiki.capify.org/index.php/Desc) method defines the task description, this shows up when using `cap -T` on your application.. these are arbitrary description strings that can be used to help your users or fellow developers.
+The [`desc`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Tasks-Desc) method defines the task description, this shows up when using `cap -T` on your application.. these are arbitrary description strings that can be used to help your users or fellow developers.
 
 Tasks without a `desc`ription will not be listed by a default `cap -T`, but will however be listed with a `cap -Tv`. More command line options for the `cap` script will be discussed later in the handbook.
 
-The [`task`](http://wiki.capify.org/index.php/Task) method expects a block, that is run when the task is invoked. The task can, typically contain any number of instructions, both to run locally and on your deployment target servers (`app`,`web`,`db`).
+The [`task`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Tasks-Task) method expects a block, that is run when the task is invoked. The task can, typically contain any number of instructions, both to run locally and on your deployment target servers (`app`,`web`,`db`).
 
 ##### Namespacing Tasks 
 
@@ -236,7 +236,7 @@ Note the different arguments, essentially it doesn't matter how you send these, 
 
 The convention here would appear to be, when using a single word namespace, or task name; **pass it as a symbol** otherwise it must be a string, using the colon-separated task notation.
 
-There are both [before](), and [after]() callbacks that you can use, and there is nothing to stop you interfering with the execution of any method that calls another, take for example that at the time of writing the implementation of `deploy:default` might look something like this:
+There are both [before](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Tasks-Before), and [after](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Tasks-After) callbacks that you can use, and there is nothing to stop you interfering with the execution of any method that calls another, take for example that at the time of writing the implementation of `deploy:default` might look something like this:
 
     namespace :deploy do
       task :default do
@@ -249,7 +249,7 @@ There are both [before](), and [after]() callbacks that you can use, and there i
       end
     end
 
-**More Info:** [Default Execution Path on the Wiki](http://wiki.capify.org/index.php/Default_Execution_Path)
+**More Info:** [Default Execution Path on the Wiki](https://raw.github.com/mpasternacki/capistrano-documentation-support-files/master/default-execution-path/Capistrano%20Execution%20Path.jpg)
 
 Here we could inject a task to happen after a symlink, but before a restart by doing something like:
 
@@ -294,7 +294,7 @@ Which would call, `task1`, `task2`, `namespace1:task1` in order. You can really 
 
     $ cap deploy logs:watch
 
-A more interesting application for this technique comes in the form of the [Multi-Stage Extension](weblog.jamisbuck.org/2007/7/23/capistrano-multistage), which qualifies for its own section of the handbook; we'll discuss a simpler implementation briefly here.
+A more interesting application for this technique comes in the form of the [Multi-Stage](http://weblog.jamisbuck.org/2007/7/23/capistrano-multistage) [Extension](https://github.com/capistrano/capistrano/wiki/2.x-Multistage-Extension), which qualifies for its own section of the handbook; we'll discuss a simpler implementation briefly here.
 
 The Multi-Stage Extension is designed for deploying the same application to multiple `stages` (development, preview, staging, production, etc) and is usually invoked as such:
 
@@ -363,7 +363,7 @@ Capistrano has its own variable mechanism built in, you will not in the default 
 
     set :foo, 'bar'
 
-As [`set`](http://wiki.capify.org/index.php/Set) is quite a complex function, we will only brush the surface here.
+As [`set`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Variables-Set) is quite a complex function, we will only brush the surface here.
 
 Here are a few things to note:
 
@@ -377,9 +377,9 @@ Note that we have a *real* ruby variable to use in our string interpolation, hav
 
 One of the key benefits to using the `set` method is that it makes the resulting variable available anywhere inside the Capistrano environment, as well as being able to assign complex objects such as Procs to variables for delayed processing.
 
-Set has a partner function [`fetch`](http://wiki.capify.org/index.php/Set) that functions similarly except that it is for retrieving previously `set` variables.
+Set has a partner function [`fetch`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Variables-Fetch) that functions similarly except that it is for retrieving previously `set` variables.
 
-In addition, there is [`exists?`](http://wiki.capify.org/index.php/Exists%3F) which can be used to check whether a variable exists at all; this might be used to implement a solution to the *missing stage* problem we left unresolved in the **Tasks** section:
+In addition, there is [`exists?`](https://github.com/capistrano/capistrano/wiki/2.x-DSL-Configuration-Variables-Exists) which can be used to check whether a variable exists at all; this might be used to implement a solution to the *missing stage* problem we left unresolved in the **Tasks** section:
 
     before :deploy do
       unless exists?(:deploy_to)
