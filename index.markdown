@@ -3,7 +3,7 @@ Capistrano Handbook
 
 ## Index
 
-* [Simple. The Way it Should Be](simple_the_way_it_should_be)
+* [Anatomy of a Capistrano installation](#anatomy-of-a-capistrano-installation)
 * [Building Blocks Variables & Tasks](building_blocks_varaibles_and_tasks)
   * [Tasks](building_blocks_varaibles_and_tasks/tasks)
   * [Variables](building_blocks_varaibles_and_tasks/variables)
