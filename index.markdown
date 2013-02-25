@@ -5,7 +5,7 @@ Capistrano Handbook
 
 * [Anatomy of a Capistrano installation](#anatomy-of-a-capistrano-installation)
 * [Building Blocks Variables & Tasks](#building-blocks-variables--tasks)
-  * [Tasks](#)
+  * [Tasks](#tasks)
   * [Variables](#variables)
 * *Local Vs. Remote Tasks (to be continued...)*
 * *Rights, Users and Privileges (to be continued...)*
