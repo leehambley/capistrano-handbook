@@ -4,12 +4,12 @@ Capistrano Handbook
 ## Index
 
 * [Anatomy of a Capistrano installation](#anatomy-of-a-capistrano-installation)
-* [Building Blocks Variables & Tasks](building_blocks_varaibles_and_tasks)
-  * [Tasks](building_blocks_varaibles_and_tasks/tasks)
-  * [Variables](building_blocks_varaibles_and_tasks/variables)
-* [Local Vs. Remote Tasks](/local_vs_remote_tasks)
-* [Rights, Users and Privileges](/rights_users_privileges)
-* [Command Line Options](/command_line_options)
+* [Building Blocks Variables & Tasks](#building-blocks-variables--tasks)
+  * [Tasks](#)
+  * [Variables](#variables)
+* *Local Vs. Remote Tasks (to be continued...)*
+* *Rights, Users and Privileges (to be continued...)*
+* *Command Line Options (to be continued...)*
 
 ### Anatomy of a Capistrano installation
 
