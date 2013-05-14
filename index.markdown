@@ -26,7 +26,8 @@ Capistrano relies on you having a `config` directory into which it will install 
 
 The `deploy.rb` file is loaded when you call `cap` on the command line; in the event that you aren't in the root of your application (or more accurately that there isn't a `capfile`) in your present working directory, `cap` will search up the directory structure until it finds one, this may include your home directory.
 
-**Beware of this when dealing with multiple projects, or nested projects - this feature was intended so that you could run a deploy, or open a [`cap shell`](http://weblog.jamisbuck.org/2006/9/21/introducing-the-capistrano-shell) without moving to the root of your application.**
+**Beware of this when dealing with 
+ple projects, or nested projects - this feature was intended so that you could run a deploy, or open a [`cap shell`](http://weblog.jamisbuck.org/2006/9/21/introducing-the-capistrano-shell) without moving to the root of your application.**
 
 Typically `capifying` an application will create something akin to the following:
 
@@ -294,7 +295,7 @@ Which would call, `task1`, `task2`, `namespace1:task1` in order. You can really 
 
     $ cap deploy logs:watch
 
-A more interesting application for this technique comes in the form of the [Multi-Stage Extension](weblog.jamisbuck.org/2007/7/23/capistrano-multistage), which qualifies for its own section of the handbook; we'll discuss a simpler implementation briefly here.
+A more interesting application for this technique comes in the form of the [Multi-Stage Extension](https://github.com/capistrano/capistrano/wiki/2.x-Multistage-Extension), which qualifies for its own section of the handbook; we'll discuss a simpler implementation briefly here.
 
 The Multi-Stage Extension is designed for deploying the same application to multiple `stages` (development, preview, staging, production, etc) and is usually invoked as such:
 
