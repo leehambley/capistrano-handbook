@@ -239,7 +239,7 @@ The convention here would appear to be, when using a single word namespace, or t
 There are both [before](), and [after]() callbacks that you can use, and there is nothing to stop you interfering with the execution of any method that calls another, take for example that at the time of writing the implementation of `deploy:default` might look something like this:
 
     namespace :deploy do
-      task :default
+      task :default do
         update
         update_code
         strategy.deploy!
