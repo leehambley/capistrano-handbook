@@ -292,7 +292,7 @@ Which would call, `task1`, `task2`, `namespace1:task1` in order. You can really 
 
     $ cap deploy logs:watch
 
-A more interesting application for this technique comes in the form of the [Multi-Stage Extension](weblog.jamisbuck.org/2007/7/23/capistrano-multistage), which qualifies for its own section of the handbook; we'll discuss a simpler implementation briefly here.
+A more interesting application for this technique comes in the form of the [Multi-Stage Extension](https://github.com/capistrano/capistrano/wiki/2.x-Multistage-Extension), which qualifies for its own section of the handbook; we'll discuss a simpler implementation briefly here.
 
 The Multi-Stage Extension is designed for deploying the same application to multiple `stages` (development, preview, staging, production, etc) and is usually invoked as such:
 
